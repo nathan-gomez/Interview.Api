@@ -20,15 +20,4 @@
         <ProjectReference Include="..\Application\Application.csproj"/>
         <ProjectReference Include="..\Infrastructure\Infrastructure.csproj"/>
     </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Middleware\"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="..\..\db\database.db">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-            <!--            <PackageCopyToOutput>true</PackageCopyToOutput>-->
-        </Content>
-    </ItemGroup>
 </Project>

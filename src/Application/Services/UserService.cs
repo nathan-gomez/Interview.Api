@@ -40,7 +40,7 @@ public class UserService : IUserService
             Id = _encryption.EncryptString(sessionId.ToString())
         };
 
-        // await _userRepository.CreateSession(sessionId, userData.Id, sessionToken.Expiration);
+        await _userRepository.CreateSession(sessionId, userData.Id, sessionToken.Expiration);
 
         return sessionToken;
     }

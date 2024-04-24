@@ -4,5 +4,6 @@ namespace Application.Interfaces;
 
 public interface IUserRepository
 {
-    Task<UserPassDto?> GetUserPassword(string username);
+    Task<UserDto?> GetUserPassword(string username);
+    Task CreateSession(Guid sessionId, Guid userId, DateTime expiration);
 }

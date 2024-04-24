@@ -1,9 +1,9 @@
 using Application;
 using Microsoft.OpenApi.Models;
-using System.Reflection;
 using Infrastructure;
 using Serilog;
 using WebApi.Controllers;
+using WebApi.Middleware;
 
 try
 {
@@ -28,8 +28,8 @@ try
     builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
     builder.Services.AddScoped<UsersController>();
-    
-    // builder.Services.AddSingleton<ValidateSession>();
+
+    builder.Services.AddSingleton<ValidateSession>();
     // builder.Services.AddSingleton<ValidateApiKey>();
 
     builder.Services.AddHealthChecks();
@@ -44,10 +44,9 @@ try
 
     app.UseHealthChecks("/health");
     // app.UseMiddleware<ValidateApiKey>();
-    // app.UseWhen(context => !context.Request.Path.Value.StartsWith("/v1/users/login"), appBuilder =>
-    // {
-    //     appBuilder.UseMiddleware<ValidateSession>();
-    // });
+    app.UseWhen(
+        context => !context.Request.Path.Value.StartsWith("/v1/users/login") && !context.Request.Path.Value.StartsWith("/swagger"),
+        appBuilder => { appBuilder.UseMiddleware<ValidateSession>(); });
 
     app.UseSerilogRequestLogging();
     app.UseHttpsRedirection();
