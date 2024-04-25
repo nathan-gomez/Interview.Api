@@ -18,9 +18,6 @@ try
             Version = "v1",
             Title = "Interview API"
         });
-
-        // var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-        // options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
     });
 
     builder.Services.AddApplication().AddInfrastructure();
@@ -32,6 +29,7 @@ try
     builder.Services.AddSingleton<ValidateApiKey>();
     builder.Services.AddSingleton<ValidateSession>();
 
+    builder.Services.AddMemoryCache();
     builder.Services.AddHealthChecks();
 
     var app = builder.Build();
@@ -43,7 +41,10 @@ try
     }
 
     app.UseHealthChecks("/health");
-    app.UseMiddleware<ValidateApiKey>();
+    app.UseWhen(
+        context => !context.Request.Path.Value.StartsWith("/swagger"),
+        appBuilder => { appBuilder.UseMiddleware<ValidateApiKey>(); });
+
     app.UseWhen(
         context => !context.Request.Path.Value.StartsWith("/v1/users/login") && !context.Request.Path.Value.StartsWith("/swagger"),
         appBuilder => { appBuilder.UseMiddleware<ValidateSession>(); });

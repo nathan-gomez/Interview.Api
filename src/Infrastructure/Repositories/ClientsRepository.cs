@@ -36,7 +36,7 @@ public class ClientsRepository : IClientsRepository
     {
         await using var connection = new SqlConnection(_connectionString);
 
-        var sql = "select a.name, a.document_id as DocumentId, a.phone_number as PhoneNumber, a.observation from clients a where id = @Id;";
+        var sql = "select a.id, a.name, a.document_id as DocumentId, a.phone_number as PhoneNumber, a.observation from clients a where id = @Id;";
         var queryParams = new DynamicParameters();
         queryParams.Add("Id", clientId, DbType.Int32);
 

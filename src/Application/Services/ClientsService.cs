@@ -17,16 +17,7 @@ public sealed class ClientsService : IClientsService
         => await _clientsRepository.CreateNewClient(request);
 
     public async Task<ClientDto?> GetClientById(int clientId)
-    {
-        var client = await _clientsRepository.GetClientById(clientId);
-        if (client == null)
-        {
-            return null;
-        }
-
-        client.Id = clientId;
-        return client;
-    }
+        => await _clientsRepository.GetClientById(clientId);
 
     public async Task<int> DeleteClientById(int clientId)
         => await _clientsRepository.DeleteClientById(clientId);

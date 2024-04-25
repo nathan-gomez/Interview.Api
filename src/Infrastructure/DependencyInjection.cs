@@ -10,6 +10,7 @@ public static class DependencyInjection
     {
         services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<IClientsRepository, ClientsRepository>();
+        services.Decorate<IClientsRepository, CacheClientsRepository>();
 
         return services;
     }
