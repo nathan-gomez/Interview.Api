@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain.Contracts.Requests;
 using Domain.Contracts.Responses;
+using Domain.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
@@ -18,6 +19,7 @@ public sealed class ClientsController : ControllerBase
         _logger = logger;
         _clientsService = clientsService;
     }
+
     /// <summary>
     /// Creates a new client.
     /// </summary>
@@ -36,7 +38,7 @@ public sealed class ClientsController : ControllerBase
             var newClientId = await _clientsService.NewClient(request);
 
             _logger.LogInformation("New client created: {@name}", request.Name);
-             return CreatedAtAction(nameof(NewClient), routeValues: new { id = newClientId }, null);
+            return CreatedAtAction(nameof(GetClientById), routeValues: new { id = newClientId }, null);
         }
         catch (Exception ex)
         {
@@ -44,8 +46,7 @@ public sealed class ClientsController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ex.Message));
         }
     }
-    
-/*
+
     /// <summary>
     /// Gets data of a single client.
     /// </summary>
@@ -53,14 +54,16 @@ public sealed class ClientsController : ControllerBase
     /// <response code="200">The client data.</response>
     [HttpGet("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<Client>> GetClientById([FromRoute] int id)
+    public async Task<ActionResult<ClientDto>> GetClientById([FromRoute] int id)
     {
         _logger.LogInformation("Starting GetClientById method.");
         try
         {
-            var response = await _clientService.GetClientById(id);
+            var response = await _clientsService.GetClientById(id);
 
             if (response is null)
             {
@@ -75,7 +78,8 @@ public sealed class ClientsController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ex.Message));
         }
     }
-    
+
+    /*
     /// <summary>
     /// Deletes a client.
     /// </summary>
