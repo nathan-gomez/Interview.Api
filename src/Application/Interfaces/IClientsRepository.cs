@@ -9,4 +9,5 @@ public interface IClientsRepository
     Task<ClientDto?> GetClientById(int clientId);
     Task<int> DeleteClientById(int clientId);
     Task<int> UpdateClientById(ClientDto clientData);
+    Task<IEnumerable<ClientDto>> GetAllClients();
 }

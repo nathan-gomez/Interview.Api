@@ -58,7 +58,8 @@ public class ClientsRepository : IClientsRepository
     {
         await using var connection = new SqlConnection(_connectionString);
 
-        var sql = "update clients set name = @Name, phone_number = @PhoneNumber, document_id = @DocumentId, observation = @Observation where id = @Id;";
+        var sql =
+            "update clients set name = @Name, phone_number = @PhoneNumber, document_id = @DocumentId, observation = @Observation where id = @Id;";
         var queryParams = new DynamicParameters();
         queryParams.Add("Id", clientData.Id, DbType.Int32);
         queryParams.Add("Name", clientData.Name, DbType.String);
@@ -67,5 +68,13 @@ public class ClientsRepository : IClientsRepository
         queryParams.Add("Observation", clientData.Observation, DbType.String);
 
         return await connection.ExecuteAsync(sql, queryParams);
+    }
+
+    public async Task<IEnumerable<ClientDto>> GetAllClients()
+    {
+        await using var connection = new SqlConnection(_connectionString);
+        var sql = "select a.id, a.name, a.document_id as DocumentId, a.phone_number as PhoneNumber, a.observation from clients a;";
+
+        return await connection.QueryAsync<ClientDto>(sql);
     }
 }

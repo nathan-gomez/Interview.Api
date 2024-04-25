@@ -143,4 +143,33 @@ public sealed class ClientsController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ex.Message));
         }
     }
+
+    /// <summary>
+    /// Gets data of a all clients.
+    /// </summary>
+    /// <response code="200">A list of all clients.</response>
+    [HttpGet()]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<IEnumerable<ClientDto>>> GetAllClients()
+    {
+        _logger.LogInformation("Starting GetAllClients method.");
+        try
+        {
+            var response = await _clientsService.GetAllClients();
+            if (!response.Any())
+            {
+                return NoContent();
+            }
+
+            _logger.LogInformation("Fetched all clients succesfully.");
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error has ocurred in GetAllClients method");
+            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ex.Message));
+        }
+    }
 }

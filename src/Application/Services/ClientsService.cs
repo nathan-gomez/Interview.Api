@@ -33,4 +33,7 @@ public sealed class ClientsService : IClientsService
 
     public async Task<int> UpdateClientById(ClientDto clientData)
         => await _clientsRepository.UpdateClientById(clientData);
+
+    public async Task<IEnumerable<ClientDto>> GetAllClients()
+        => await _clientsRepository.GetAllClients();
 }
