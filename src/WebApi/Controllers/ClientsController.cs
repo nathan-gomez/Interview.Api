@@ -79,7 +79,6 @@ public sealed class ClientsController : ControllerBase
         }
     }
 
-    /*
     /// <summary>
     /// Deletes a client.
     /// </summary>
@@ -95,8 +94,8 @@ public sealed class ClientsController : ControllerBase
         _logger.LogInformation("Starting DeleteClient method.");
         try
         {
-            var response = await _clientService.DeleteClient(id);
-
+            // string sessionId = HttpContext.Items["SessionId"]?.ToString();
+            var response = await _clientsService.DeleteClientById(id);
             if (response == 0)
             {
                 _logger.LogInformation("No client found with id: {@id}.", id);
@@ -113,6 +112,7 @@ public sealed class ClientsController : ControllerBase
         }
     }
 
+    /*
     /// <summary>
     /// Updates the client info.
     /// </summary>

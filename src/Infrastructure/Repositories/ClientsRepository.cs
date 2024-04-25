@@ -42,4 +42,15 @@ public class ClientsRepository : IClientsRepository
 
         return await connection.QuerySingleOrDefaultAsync<ClientDto>(sql, queryParams);
     }
+
+    public async Task<int> DeleteClientById(int clientId)
+    {
+        await using var connection = new SqlConnection(_connectionString);
+
+        var sql = "delete from clients where id = @Id;";
+        var queryParams = new DynamicParameters();
+        queryParams.Add("Id", clientId, DbType.Int32);
+
+        return await connection.ExecuteAsync(sql, queryParams);
+    }
 }
