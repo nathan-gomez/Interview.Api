@@ -29,8 +29,8 @@ try
 
     builder.Services.AddScoped<UsersController>();
 
+    builder.Services.AddSingleton<ValidateApiKey>();
     builder.Services.AddSingleton<ValidateSession>();
-    // builder.Services.AddSingleton<ValidateApiKey>();
 
     builder.Services.AddHealthChecks();
 
@@ -43,7 +43,7 @@ try
     }
 
     app.UseHealthChecks("/health");
-    // app.UseMiddleware<ValidateApiKey>();
+    app.UseMiddleware<ValidateApiKey>();
     app.UseWhen(
         context => !context.Request.Path.Value.StartsWith("/v1/users/login") && !context.Request.Path.Value.StartsWith("/swagger"),
         appBuilder => { appBuilder.UseMiddleware<ValidateSession>(); });
