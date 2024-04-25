@@ -112,7 +112,6 @@ public sealed class ClientsController : ControllerBase
         }
     }
 
-    /*
     /// <summary>
     /// Updates the client info.
     /// </summary>
@@ -123,13 +122,12 @@ public sealed class ClientsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> UpdateClient(UpdateClientRequest request)
+    public async Task<ActionResult> UpdateClient(ClientDto request)
     {
         _logger.LogInformation("Starting UpdateClient method for client: {@id}.", request.Id);
         try
         {
-            var response = await _clientService.UpdateClient(request);
-
+            var response = await _clientsService.UpdateClientById(request);
             if (response == 0)
             {
                 _logger.LogInformation("No client found with id: {@id}.", request.Id);
@@ -144,5 +142,5 @@ public sealed class ClientsController : ControllerBase
             _logger.LogError(ex, "An error has ocurred in UpdateClient method");
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ex.Message));
         }
-    }*/
+    }
 }

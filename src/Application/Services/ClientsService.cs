@@ -30,4 +30,7 @@ public sealed class ClientsService : IClientsService
 
     public async Task<int> DeleteClientById(int clientId)
         => await _clientsRepository.DeleteClientById(clientId);
+
+    public async Task<int> UpdateClientById(ClientDto clientData)
+        => await _clientsRepository.UpdateClientById(clientData);
 }

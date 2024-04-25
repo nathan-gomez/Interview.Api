@@ -53,4 +53,19 @@ public class ClientsRepository : IClientsRepository
 
         return await connection.ExecuteAsync(sql, queryParams);
     }
+
+    public async Task<int> UpdateClientById(ClientDto clientData)
+    {
+        await using var connection = new SqlConnection(_connectionString);
+
+        var sql = "update clients set name = @Name, phone_number = @PhoneNumber, document_id = @DocumentId, observation = @Observation where id = @Id;";
+        var queryParams = new DynamicParameters();
+        queryParams.Add("Id", clientData.Id, DbType.Int32);
+        queryParams.Add("Name", clientData.Name, DbType.String);
+        queryParams.Add("PhoneNumber", clientData.PhoneNumber, DbType.String);
+        queryParams.Add("DocumentId", clientData.DocumentId, DbType.String);
+        queryParams.Add("Observation", clientData.Observation, DbType.String);
+
+        return await connection.ExecuteAsync(sql, queryParams);
+    }
 }
