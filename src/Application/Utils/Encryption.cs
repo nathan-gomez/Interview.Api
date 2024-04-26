@@ -16,8 +16,12 @@ public sealed class Encryption : IEncryption
 
     public string DecryptString(string encryptedText)
     {
-        var key = _configuration.GetSection("EncryptionKey").Value;
+        if (string.IsNullOrEmpty(encryptedText))
+        {
+            throw new ArgumentException($"Parameter {nameof(encryptedText)} cannot be empty");
+        }
 
+        var key = _configuration.GetSection("EncryptionKey").Value;
         if (string.IsNullOrEmpty(key))
         {
             throw new Exception("EncryptionKey not defined");
@@ -45,8 +49,12 @@ public sealed class Encryption : IEncryption
 
     public string EncryptString(string plainText)
     {
-        var key = _configuration.GetSection("EncryptionKey").Value;
+        if (string.IsNullOrEmpty(plainText))
+        {
+            throw new ArgumentException($"Parameter {nameof(plainText)} cannot be empty");
+        }
 
+        var key = _configuration.GetSection("EncryptionKey").Value;
         if (string.IsNullOrEmpty(key))
         {
             throw new Exception("EncryptionKey not defined");
