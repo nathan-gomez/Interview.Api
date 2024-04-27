@@ -1,10 +1,5 @@
-﻿using System.Data;
-using System.Net;
+﻿using System.Net;
 using Application.Interfaces;
-using Dapper;
-using Domain.Dtos;
-using Microsoft.Data.SqlClient;
-
 
 namespace WebApi.Middleware;
 
@@ -12,13 +7,13 @@ public sealed class ValidateSession : IMiddleware
 {
     private readonly IEncryption _encryption;
     private readonly ILogger<ValidateSession> _logger;
-    private readonly string _connectionString;
+    private readonly ISessionRepository _sessionRepository;
 
-    public ValidateSession(IEncryption encryption, ILogger<ValidateSession> logger, IConfiguration configuration)
+    public ValidateSession(IEncryption encryption, ILogger<ValidateSession> logger, ISessionRepository sessionRepository)
     {
         _encryption = encryption;
         _logger = logger;
-        _connectionString = configuration.GetConnectionString("DefaultConnection")!;
+        _sessionRepository = sessionRepository;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -28,11 +23,11 @@ public sealed class ValidateSession : IMiddleware
             try
             {
                 var sessionId = _encryption.DecryptString(token);
-                var currentSession = await GetSession(sessionId);
+                var currentSession = await _sessionRepository.GetSession(sessionId);
 
                 if (currentSession.Expiration < DateTime.Now)
                 {
-                    await DeleteSession(sessionId);
+                    await _sessionRepository.DeleteSession(sessionId);
                     context.Response.Cookies.Delete("session_token");
                     context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     return;
@@ -54,29 +49,5 @@ public sealed class ValidateSession : IMiddleware
 
         _logger.LogWarning("No session token provided");
         context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-    }
-
-    private async Task<SessionDto> GetSession(string sessionId)
-    {
-        await using var connection = new SqlConnection(_connectionString);
-
-        var sql = "select expiration, user_id as userId from sessions where id = @Id;";
-        var queryParams = new DynamicParameters();
-        queryParams.Add("Id", sessionId, DbType.String);
-
-        var response = await connection.QueryFirstAsync<SessionDto>(sql, queryParams);
-
-        return response;
-    }
-
-    private async Task DeleteSession(string sessionId)
-    {
-        await using var connection = new SqlConnection(_connectionString);
-
-        var sql = "delete from sessions where id = @Id;";
-        var queryParams = new DynamicParameters();
-        queryParams.Add("Id", sessionId, DbType.Guid);
-
-        await connection.ExecuteAsync(sql, queryParams);
     }
 }

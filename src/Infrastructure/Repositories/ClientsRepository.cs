@@ -4,7 +4,7 @@ using Dapper;
 using Domain.Contracts.Requests;
 using Domain.Dtos;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
+using IDbConnection = Application.Interfaces.IDbConnection;
 
 namespace Infrastructure.Repositories;
 
@@ -12,9 +12,9 @@ public class ClientsRepository : IClientsRepository
 {
     private readonly string _connectionString;
 
-    public ClientsRepository(IConfiguration configuration)
+    public ClientsRepository(IDbConnection connection)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
+        _connectionString = connection.GetConnectionString();
     }
 
     public async Task<int> CreateNewClient(NewClientRequest clientData)

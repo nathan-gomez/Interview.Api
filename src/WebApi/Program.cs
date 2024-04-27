@@ -41,12 +41,10 @@ try
     }
 
     app.UseHealthChecks("/health");
-    app.UseWhen(
-        context => !context.Request.Path.Value.StartsWith("/swagger"),
-        appBuilder => { appBuilder.UseMiddleware<ValidateApiKey>(); });
+    app.UseMiddleware<ValidateApiKey>();
 
     app.UseWhen(
-        context => !context.Request.Path.Value.StartsWith("/v1/users/login") && !context.Request.Path.Value.StartsWith("/swagger"),
+        context => !context.Request.Path.Value.Equals("/v1/users/login", StringComparison.OrdinalIgnoreCase),
         appBuilder => { appBuilder.UseMiddleware<ValidateSession>(); });
 
     app.UseSerilogRequestLogging();
@@ -64,4 +62,8 @@ catch (Exception ex)
 finally
 {
     Log.CloseAndFlush();
+}
+
+public partial class Program
+{
 }

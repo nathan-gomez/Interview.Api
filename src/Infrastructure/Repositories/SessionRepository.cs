@@ -3,40 +3,39 @@ using Application.Interfaces;
 using Dapper;
 using Domain.Dtos;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using IDbConnection = Application.Interfaces.IDbConnection;
 
 namespace Infrastructure.Repositories;
 
-public sealed class UserRepository : IUserRepository
+public class SessionRepository : ISessionRepository
 {
     private readonly string _connectionString;
 
-    public UserRepository(IDbConnection connection)
+    public SessionRepository(IDbConnection connection)
     {
         _connectionString = connection.GetConnectionString();
     }
 
-    public async Task<UserDto?> GetUserPassword(string username)
+    public async Task<SessionDto> GetSession(string sessionId)
     {
         await using var connection = new SqlConnection(_connectionString);
 
-        var sql = "select id, password from users where username = @Username;";
+        var sql = "select expiration, user_id as userId from sessions where id = @Id;";
         var queryParams = new DynamicParameters();
-        queryParams.Add("Username", username, DbType.String);
+        queryParams.Add("Id", sessionId, DbType.String);
 
-        return await connection.QueryFirstOrDefaultAsync<UserDto>(sql, queryParams);
+        var response = await connection.QueryFirstAsync<SessionDto>(sql, queryParams);
+
+        return response;
     }
 
-    public async Task CreateSession(Guid sessionId, Guid userId, DateTime expiration)
+    public async Task DeleteSession(string sessionId)
     {
         await using var connection = new SqlConnection(_connectionString);
 
-        var sql = "insert into sessions (id ,user_id, expiration) values (@Id, @UserId, @Expiration);";
+        var sql = "delete from sessions where id = @Id;";
         var queryParams = new DynamicParameters();
         queryParams.Add("Id", sessionId, DbType.Guid);
-        queryParams.Add("UserId", userId, DbType.Guid);
-        queryParams.Add("Expiration", expiration, DbType.DateTime2);
 
         await connection.ExecuteAsync(sql, queryParams);
     }
